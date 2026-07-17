@@ -1,0 +1,3098 @@
+{
+  "name": "Rechnungsautomatisierung EÜR",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Google Drive tracken",
+        "height": 293,
+        "width": 363,
+        "color": 7
+      },
+      "id": "4b3da53b-a1f0-49cc-89c6-9134e8e85f08",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3312,
+        -1536
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Text aus PDF extrahieren",
+        "height": 293,
+        "width": 403,
+        "color": 7
+      },
+      "id": "346ddc28-8cd5-4db0-8303-20605df00b26",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2928,
+        -1536
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Informationsextrahierung mit KI",
+        "height": 293,
+        "width": 403,
+        "color": 7
+      },
+      "id": "bfdc6ec2-01c7-45bb-ba85-64bd1f816bb4",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2512,
+        -1536
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -2480,
+        -1232
+      ],
+      "id": "5d329b87-2854-4ea1-a1d9-3efd063f5d59",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MXiLWc6XUGLXTj9x",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.jahr }}",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv",
+            "mode": "list",
+            "cachedResultName": "Rechnungen",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv"
+          },
+          "whatToSearch": "folders"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2448,
+        -2192
+      ],
+      "id": "00c1165a-8320-4457-84c9-d7e0f11c752c",
+      "name": "Jahresordner schon vorhanden?",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('Loop Over Items').item.json.jahr }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv",
+          "mode": "list",
+          "cachedResultName": "Rechnungen",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2048,
+        -2208
+      ],
+      "id": "e2798894-7cf2-449f-a9a9-97cdec021cb6",
+      "name": "Jahresordner erstellen",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $json.monate }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Jahresordner erstellen').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1520,
+        -2128
+      ],
+      "id": "4c048349-4225-4f67-b19c-635e8ca70ba2",
+      "name": "Monatsordner einfügen",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -3088,
+        -1440
+      ],
+      "id": "4f3f01c1-ae50-44a0-8294-998769dd5acb",
+      "name": "Loop"
+    },
+    {
+      "parameters": {
+        "content": "## Rechnung in entsprechenden Ordner verschieben und umbennenen",
+        "height": 293,
+        "width": 623,
+        "color": 7
+      },
+      "id": "65fa06bd-a4dd-4ce3-b18e-5a2c5691d1f9",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2080,
+        -1536
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Dokumentieren",
+        "height": 293,
+        "width": 223,
+        "color": 7
+      },
+      "id": "0ac1182b-47a3-41d8-b402-cd999dbfbdb7",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1408,
+        -1536
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "monate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1712,
+        -2208
+      ],
+      "id": "ae17a3aa-1b7c-4050-9d6d-a15f2b5c07da",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3d0336a2-4706-42ad-9b5a-b1ba22f7c859",
+              "name": "monate",
+              "value": " [\"Januar\", \"Februar\", \"März\", \"April\", \"Mai\", \"Juni\", \"Juli\", \"August\", \"September\", \"Oktober\", \"November\", \"Dezember\"]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1872,
+        -2208
+      ],
+      "id": "22ee7ab0-cea2-4852-ac71-9b7710a3495f",
+      "name": "Monate als Liste"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3280,
+        -2208
+      ],
+      "id": "259f37fb-738c-4967-8afd-648a848f909e",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e8e78387-492a-4668-97d6-e5be1e512661",
+              "name": "jahr",
+              "value": "[2025]",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3072,
+        -2208
+      ],
+      "id": "f0c7f50a-50e3-4104-9726-2da11647ec7c",
+      "name": "Jahre auswählen"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "jahr",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -2896,
+        -2208
+      ],
+      "id": "a805e007-6aaf-4241-84e0-b870a70f2715",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2688,
+        -2208
+      ],
+      "id": "946f211a-f928-4073-91e1-ffb77411c1a3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "content": "# Google Drive Ordner für Rechnungen erstellen",
+        "height": 80,
+        "width": 800,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3312,
+        -2368
+      ],
+      "id": "aa7f14c9-87fb-40e0-91fb-4789962abbaf",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Eingehende Rechnungen in Google Drive verarbeiten",
+        "height": 80,
+        "width": 928,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -3328,
+        -1664
+      ],
+      "id": "9fafd5d4-e406-42b1-82a1-6eeb80da953b",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8947703c-9256-4466-be49-0480aaace705",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2256,
+        -2192
+      ],
+      "id": "486ce161-86bb-4038-837f-3138f7fa4437",
+      "name": "Ordner noch nicht vorhanden"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -976,
+        -1904
+      ],
+      "id": "587ff7e3-d3da-43df-a828-8e937e263b83",
+      "name": "Telegram Trigger",
+      "webhookId": "1955ec53-7b94-4b44-a577-ca0930bf1e13",
+      "credentials": {
+        "telegramApi": {
+          "id": "4AxDPasXBJcUaU9D",
+          "name": "TESTBOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content.parts[0].text }}",
+        "options": {
+          "systemMessage": "=# ROLLE\nDu bist der perönliche Buchaltungsassistent. Du kannst die Einnahmen und Ausgaben von aus einer Google Sheets auslesen und fragen dazu beantworten. Für Kalkulationen nutzt du das \"Calculator\" Tool.\n\n# EXTRA INFORMATIONEN\nDas aktuelle Datum und die aktuelle Zeit sind: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        416,
+        -1888
+      ],
+      "id": "88545f60-4ead-46ab-9c6f-34c33dca3860",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "8cd90a36-6c5e-4078-8e5b-73fb4a6bb79c"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "3388ce7f-5682-4851-8fce-65cd19c74ab1",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8c967cd2-c18e-430d-a931-2866d1094eb2",
+                    "leftValue": "={{ $json.message.photo }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Bild"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -592,
+        -1920
+      ],
+      "id": "7f4d96d1-11e0-409d-9615-3d42ce08a254",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        448,
+        -1712
+      ],
+      "id": "5fbab0a4-e016-48dc-ad9d-cc066bdd2d42",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Switch').item.json.message.photo[2].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        -1488
+      ],
+      "id": "21cb0fd7-48dd-4308-abb0-4fa21a656d1f",
+      "name": "Bild herunterladen",
+      "webhookId": "697df5a1-8aab-4c31-99f2-199f63a4f8c2",
+      "credentials": {
+        "telegramApi": {
+          "id": "4AxDPasXBJcUaU9D",
+          "name": "TESTBOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1520,
+        -1888
+      ],
+      "id": "ea4a7fe5-2961-4cb9-8c7a-81b59c6338d8",
+      "name": "Nachricht senden",
+      "webhookId": "c871980c-b6ae-41a4-98b0-77b83c80d178",
+      "credentials": {
+        "telegramApi": {
+          "id": "4AxDPasXBJcUaU9D",
+          "name": "TESTBOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cdb98767-5769-44c4-bb80-54fc425ed6a4",
+              "leftValue": "={{ $json.message.from.id }}",
+              "rightValue": 6996267223,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -784,
+        -1904
+      ],
+      "id": "809611d5-a85d-40ab-8958-f5d76850a3bb",
+      "name": "Schutz vor Fremdzugriff"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -1712
+      ],
+      "id": "b57e2594-7ed5-4c1c-bea0-548b39ab4b8a",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MXiLWc6XUGLXTj9x",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "### Hier deine Telegram Chat-ID einfügen",
+        "height": 220,
+        "width": 220,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        -1984
+      ],
+      "id": "8aba9d55-4310-40c0-afb5-072b8e3876ca",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## Sprachverarbeitung",
+        "height": 240,
+        "width": 360,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -336,
+        -2192
+      ],
+      "id": "b75f9161-affe-441e-a1b7-38cd76f31642",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## Bildverarbeitung",
+        "height": 240,
+        "width": 1880,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -1568
+      ],
+      "id": "08061f07-7ee7-431c-b6fe-b909a67008ae",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q",
+          "mode": "list",
+          "cachedResultName": "EÜR 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1787233319,
+          "mode": "list",
+          "cachedResultName": "Belege",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit#gid=1787233319"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        624,
+        -1712
+      ],
+      "id": "8884cb5f-7c02-49cc-90c4-0994ab17df73",
+      "name": "Alle Belege auslesen",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LZ3LlQvYNg4X6eWJ",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1c39951a-df34-4fc6-b7b1-991bcad6f5d8",
+              "name": "output",
+              "value": "=Die {{ $('Einnahme oder Ausgabe').item.json.data.approved ? 'Einnahme' : 'Ausgabe' }} wurde eingetragen und das Bild in den entsprechenden Ordner hochgeladen.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        -1488
+      ],
+      "id": "6f8e1912-c998-4dfc-a61d-1bc49bcbe9ca",
+      "name": "Erfolgsnachricht"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1G43gRpmHSSwZytj6YgXKh4C0ObWnFgRa",
+          "mode": "list",
+          "cachedResultName": "Ausgaben",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1G43gRpmHSSwZytj6YgXKh4C0ObWnFgRa"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3296,
+        -1440
+      ],
+      "id": "61113404-add5-466c-8545-fd57524df2a6",
+      "name": "Ausgaben",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "17RIa-nmTpIZ6nTJiR0D30Pqqmyb9YJ6N",
+          "mode": "list",
+          "cachedResultName": "Einnahmen",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/17RIa-nmTpIZ6nTJiR0D30Pqqmyb9YJ6N"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -3296,
+        -1264
+      ],
+      "id": "a71a17a0-e131-4df5-8b7d-a14cca2135de",
+      "name": "Einnahmen",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "message": "Handelt es sich um eine Einnahme oder Ausgabe?",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double",
+            "approveLabel": "Einnahme",
+            "disapproveLabel": "Ausgabe"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        -1488
+      ],
+      "id": "ef8e0e15-ecd1-4d60-9db4-b2aea95df8f1",
+      "name": "Einnahme oder Ausgabe",
+      "webhookId": "2f89b43b-76e2-4c35-b007-8b4d006012a9",
+      "credentials": {
+        "telegramApi": {
+          "id": "4AxDPasXBJcUaU9D",
+          "name": "TESTBOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentType": "image_url",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -1488
+      ],
+      "id": "d49f1818-badf-43cf-9722-e76e6bebd5fb",
+      "name": "Bild auslesen",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "kgU3AoxRUplPBec8",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q",
+          "mode": "list",
+          "cachedResultName": "EÜR 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1787233319,
+          "mode": "list",
+          "cachedResultName": "Belege",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit#gid=1787233319"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Art": "={{ $('Einnahme oder Ausgabe').item.json.data.approved ? 'Einnahme' : 'Ausgabe' }}",
+            "USt-IdNr": "={{ $('Informationen extrahieren2').item.json.output['ust-id'] }}",
+            "Beleg-Link": "={{ $json.webViewLink }}",
+            "Kategorie": "={{ $('Informationen extrahieren2').item.json.output.kategorie }}",
+            "Geschäftspartner": "={{ $('Informationen extrahieren2').item.json.output['geschäftspartner'] }}",
+            "Bezeichnung": "={{ $('Informationen extrahieren2').item.json.output.bezeichnung }}",
+            "Rechnungsnummer": "={{ $('Informationen extrahieren2').item.json.output.rechnungsnummer }}",
+            "Rechnungsdatum": "={{ $('Informationen extrahieren2').item.json.output.rechnungsdatum }}",
+            "Netto": "={{ $('Informationen extrahieren2').item.json.output.nettobetrag }}",
+            "Steuersatz": "={{ $('Informationen extrahieren2').item.json.output.steuersatz }}",
+            "Währung": "={{ $('Informationen extrahieren2').item.json.output['währung'] }}",
+            "Steuer": "={{ $('Informationen extrahieren2').item.json.output.steuer }}",
+            "Brutto": "={{ $('Informationen extrahieren2').item.json.output.bruttobetrag }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Art",
+              "displayName": "Art",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Kategorie",
+              "displayName": "Kategorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Geschäftspartner",
+              "displayName": "Geschäftspartner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "USt-IdNr",
+              "displayName": "USt-IdNr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Bezeichnung",
+              "displayName": "Bezeichnung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rechnungsnummer",
+              "displayName": "Rechnungsnummer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rechnungsdatum",
+              "displayName": "Rechnungsdatum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Netto",
+              "displayName": "Netto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Steuersatz",
+              "displayName": "Steuersatz",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Steuer",
+              "displayName": "Steuer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Brutto",
+              "displayName": "Brutto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Währung",
+              "displayName": "Währung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beleg-Link",
+              "displayName": "Beleg-Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Zahlungsdatum",
+              "displayName": "Zahlungsdatum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Zahlungsstatus",
+              "displayName": "Zahlungsstatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Zahlungsweg",
+              "displayName": "Zahlungsweg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notizen",
+              "displayName": "Notizen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1088,
+        -1488
+      ],
+      "id": "bc0cc198-4d3b-42d6-a6cf-86bb6f6c9b3b",
+      "name": "Eintrag in Belege",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LZ3LlQvYNg4X6eWJ",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "readStatus": "unread"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -864,
+        -944
+      ],
+      "id": "eb91d4a0-5bf5-4505-9b22-8553a0db3e66",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "dgYuTPNYEcoO8ucv",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.subject }}\n\n{{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Rechnung",
+              "description": "Bei dem Text handelt es sich um eine Rechnung."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        -448,
+        -944
+      ],
+      "id": "430c167c-4d3d-4db7-8c26-87dab7e23d4a",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0d7e9092-c6cc-466b-a852-7384d8363ff1",
+              "leftValue": "={{ $binary.attachment_0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -656,
+        -944
+      ],
+      "id": "77699123-2f36-4aa4-9be6-b990a2169125",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -704
+      ],
+      "id": "0b5f2586-698f-483b-b742-b0aa6db55345",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MXiLWc6XUGLXTj9x",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q",
+          "mode": "list",
+          "cachedResultName": "EÜR 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1787233319,
+          "mode": "list",
+          "cachedResultName": "Belege",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit#gid=1787233319"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "USt-IdNr": "={{ $('Informationen extrahieren1').item.json.output['ust-id'] }}",
+            "Beleg-Link": "={{ $json.webViewLink }}",
+            "Kategorie": "={{ $('Informationen extrahieren1').item.json.output.kategorie }}",
+            "Geschäftspartner": "={{ $('Informationen extrahieren1').item.json.output['geschäftspartner'] }}",
+            "Bezeichnung": "={{ $('Informationen extrahieren1').item.json.output.bezeichnung }}",
+            "Rechnungsnummer": "={{ $('Informationen extrahieren1').item.json.output.rechnungsnummer }}",
+            "Rechnungsdatum": "={{ $('Informationen extrahieren1').item.json.output.rechnungsdatum }}",
+            "Netto": "={{ $('Informationen extrahieren1').item.json.output.nettobetrag }}",
+            "Steuersatz": "={{ $('Informationen extrahieren1').item.json.output.steuersatz }}",
+            "Währung": "={{ $('Informationen extrahieren1').item.json.output['währung'] }}",
+            "Art": "Ausgabe",
+            "Steuer": "={{ $('Informationen extrahieren1').item.json.output.steuer }}",
+            "Brutto": "={{ $('Informationen extrahieren1').item.json.output.bruttobetrag }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Art",
+              "displayName": "Art",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Kategorie",
+              "displayName": "Kategorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Geschäftspartner",
+              "displayName": "Geschäftspartner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "USt-IdNr",
+              "displayName": "USt-IdNr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Bezeichnung",
+              "displayName": "Bezeichnung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rechnungsnummer",
+              "displayName": "Rechnungsnummer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rechnungsdatum",
+              "displayName": "Rechnungsdatum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Netto",
+              "displayName": "Netto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Steuersatz",
+              "displayName": "Steuersatz",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Steuer",
+              "displayName": "Steuer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Brutto",
+              "displayName": "Brutto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Währung",
+              "displayName": "Währung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beleg-Link",
+              "displayName": "Beleg-Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Zahlungsdatum",
+              "displayName": "Zahlungsdatum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Zahlungsstatus",
+              "displayName": "Zahlungsstatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Zahlungsweg",
+              "displayName": "Zahlungsweg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notizen",
+              "displayName": "Notizen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1088,
+        -944
+      ],
+      "id": "f07effd9-b47f-4a22-9b41-a4be4c72db87",
+      "name": "Eintrag in Belege1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LZ3LlQvYNg4X6eWJ",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Eingehende Emails mit Rechnungen verarbeiten",
+        "height": 80,
+        "width": 864,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        -1136
+      ],
+      "id": "d8071333-0df0-469b-b024-c32d255b29bf",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "# Verarbeitung von Rechnungen im Bildformat über Telegram + Agent zum Abfragen der Rechnungen",
+        "height": 80,
+        "width": 1696,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -976,
+        -2368
+      ],
+      "id": "f08da15b-5a91-4bda-b698-b3a06dadae60",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -1712
+      ],
+      "id": "79701813-34cb-4520-89a6-8bf54ca1826a",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.extractedText }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "kategorie",
+              "description": "Die Kategorie der Einnahme/Ausgabe. Wähle die passende Kategorie aus folgender Liste aus:\n\nKategorien der Einnahmen:\n- Betriebseinnahmen 19%\n- Betriebseinnahmen 7%\n- Steuerfreie Einnahmen\n- USt-Erstattung vom Finanzamt\n- Verkauf Anlagevermögen\n- Privatentnahme\n\nKategorien der Ausgaben:\n- Wareneinkauf\n- Fremdleistungen\n- Personal\n- Miete/Raumkosten\n- Telefon/Internet\n- Reisekosten\n- Fortbildung\n- Werbung\n- Bürobedarf\n- Rechts-/Steuerberatung\n- Versicherungen\n- Beiträge/Gebühren\n- Kfz-Kosten\n- Bewirtung\n- Geschenke\n- Homeoffice-Pauschale\n- Abschreibungen (AfA)\n- Bankgebühren\n- Software/Abos\n- Sonstige Ausgaben",
+              "required": true
+            },
+            {
+              "name": "geschäftspartner",
+              "description": "=Name des Unternehmens oder der Person, von dem die Rechnung stammt (bei Ausgaben) oder an den die Rechnung geht (bei Einnahmen). Extrahiere den vollständigen Firmennamen inkl. Rechtsform (z.B. \"Mustermann GmbH\").",
+              "required": true
+            },
+            {
+              "name": "ust-id",
+              "description": "Umsatzsteuer-Identifikationsnummer des Geschäftspartners. Format: Länderkürzel + Zahlen (z.B. \"DE123456789\"). Falls nicht vorhanden, leer lassen.",
+              "required": true
+            },
+            {
+              "name": "bezeichnung",
+              "description": "Kurze Beschreibung der Leistung oder Ware. Was wurde gekauft/verkauft? (z.B. \"Webdesign Homepage\", \"Büromaterial\", \"Beratung März 2024\").",
+              "required": true
+            },
+            {
+              "name": "rechnungsnummer",
+              "description": "Die Rechnungsnummer des Belegs, wie sie auf der Rechnung steht (z.B. \"RE-2024-0042\", \"INV-12345\").",
+              "required": true
+            },
+            {
+              "name": "rechnungsdatum",
+              "description": "Das Datum, das auf der Rechnung als Rechnungsdatum angegeben ist. Format: TT.MM.JJJJ (z.B. \"15.03.2024\").",
+              "required": true
+            },
+            {
+              "name": "nettobetrag",
+              "description": "Rechnungsbetrag ohne Umsatzsteuer. Nur die Zahl, ohne €-Zeichen (z.B. \"510,50\"). Bei mehreren Positionen die Netto-Summe.",
+              "required": true
+            },
+            {
+              "name": "steuersatz",
+              "description": "Der Umsatzsteuersatz. Möglichkeiten: 19%, 7%, 0%. Falls mehrere Steuersätze, nimm den Hauptsteuersatz.",
+              "required": true
+            },
+            {
+              "name": "währung",
+              "description": "Währung des Betrags. Standard: \"EUR\". Andere Optionen: \"USD\", \"GBP\", \"CHF\".",
+              "required": true
+            },
+            {
+              "name": "monat",
+              "description": "Der ausgeschriebene Monat des Rechnungsdatums (\"Januar\", \"Februar\". etc.)",
+              "required": true
+            },
+            {
+              "name": "jahr",
+              "description": "Das Jahr des Rechnungsdatums (\"2024\", \"2025\", etc.)",
+              "required": true
+            },
+            {
+              "name": "bruttobetrag",
+              "description": "Rechnungsbetrag mit Umsatzsteuer. Nur die Zahl, ohne €-Zeichen (z.B. \"610,50\").",
+              "required": true
+            },
+            {
+              "name": "steuer",
+              "description": "Der Geldbetrag der durch die Umsatzsteuer dazukommt. Nur die Zahl, ohne €-Zeichen (z.B. \"110,50\")."
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "=Du bist ein erfahrener Extraktionsalgorithmus für Rechnungen.\nExtrahiere ausschließlich relevante Informationen aus dem Text.Wenn du den Wert eines gefragten Attributs nicht erkennst, darfst du den Attributwert weglassen. \n\nDu brauchst die Währung nicht zusätzlich nach jedem Betrag angeben, dafür gibt es die Variable \"Währung\".\n\nWICHTIG: Nutze für Beträge die deutsche Schreibweise (z.B. 1,99€ statt 1.99€ oder 1239,10 statt 1239.10)\n\nEs handelt sich bei folgender Rechnung um eine Ausgabe.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        96,
+        -944
+      ],
+      "id": "9fa7b839-d569-48dd-a6aa-1d882639b089",
+      "name": "Informationen extrahieren1"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.output.jahr }}",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv",
+            "mode": "list",
+            "cachedResultName": "Rechnungen",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv"
+          },
+          "whatToSearch": "folders"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2016,
+        -1424
+      ],
+      "id": "893429f2-d84a-4f76-a9f6-09ab904fd41e",
+      "name": "Jahresordner",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Informationen extrahieren').item.json.output.monat }}",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1872,
+        -1424
+      ],
+      "id": "108f3f7d-663f-4d8c-a7dd-29238e8362bc",
+      "name": "Monatsordner",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "move",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Datei herunterladen').item.json.id }}",
+          "mode": "id"
+        },
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1728,
+        -1424
+      ],
+      "id": "86f5fc7c-d608-4d76-823a-5b5ad413ebd5",
+      "name": "Datei verschieben",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "newUpdatedFileName": "={{ $('Informationen extrahieren').item.json.output.bezeichnung }}-{{ $('Informationen extrahieren').item.json.output.rechnungsdatum }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1568,
+        -1424
+      ],
+      "id": "7e4bdd90-d68b-4df6-9692-6853292974e0",
+      "name": "Dateiname anpassen",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2880,
+        -1424
+      ],
+      "id": "7b47e7b7-4694-481b-9835-0335c4d22c81",
+      "name": "Datei herunterladen",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -2656,
+        -1424
+      ],
+      "id": "f6e565b4-c343-4803-914b-978ce7e72524",
+      "name": "Text extrahieren",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "kgU3AoxRUplPBec8",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        -2112
+      ],
+      "id": "5d315f33-4731-4a37-9e53-76441af995af",
+      "name": "Sprachnachricht herunterladen",
+      "webhookId": "303a1aba-4c64-4306-a108-300580e2177c",
+      "credentials": {
+        "telegramApi": {
+          "id": "4AxDPasXBJcUaU9D",
+          "name": "TESTBOT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3-flash-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3-flash-preview"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -2112
+      ],
+      "id": "9321dcf6-9ad3-4ce9-950b-a8a1b1c60a61",
+      "name": "Sprachnachricht transkribieren",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "XmGHqJ0MRP6YEqcD",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Informationen extrahieren2').item.json.output.jahr }}",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv",
+            "mode": "list",
+            "cachedResultName": "Rechnungen",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv"
+          },
+          "whatToSearch": "folders"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        448,
+        -1488
+      ],
+      "id": "810cbf81-0aec-4004-ae3b-22352b4d77e4",
+      "name": "Jahresordner1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Informationen extrahieren2').item.json.output.monat }}",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        608,
+        -1488
+      ],
+      "id": "ef7df484-d2cb-40b6-b11c-1eb2b0e17852",
+      "name": "Monatsordner1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a375e03e-59b0-4422-8b6a-95108a784a5f",
+              "name": "data",
+              "value": "={{$(\"Bild herunterladen\").item.binary.data}}",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -1488
+      ],
+      "id": "e7bf98f9-5c55-4e21-a006-c5efacd34b68",
+      "name": "Datei setzen"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Informationen extrahieren2').item.json.output.bezeichnung }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Monatsordner1').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        928,
+        -1488
+      ],
+      "id": "ec37fbc1-b1d7-4e32-a065-f5959aa65ffc",
+      "name": "Dateiupload",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "binaryProperty": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mistralAi",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -944
+      ],
+      "id": "6a0cbeb8-ba69-45f9-8410-46341f4bb8f2",
+      "name": "Text extrahieren1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "kgU3AoxRUplPBec8",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Informationen extrahieren1').item.json.output.jahr }}",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv",
+            "mode": "list",
+            "cachedResultName": "Rechnungen",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1yvZA5igxuwxC-E8AphVnW-FsRLnODSpv"
+          },
+          "whatToSearch": "folders"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        416,
+        -944
+      ],
+      "id": "bc4c32fe-5a2b-48bf-8d94-fb9970255e19",
+      "name": "Jahresordner2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $('Informationen extrahieren1').item.json.output.monat }}",
+        "filter": {
+          "driveId": {
+            "mode": "list",
+            "value": "My Drive"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "={{ $json.id }}",
+            "mode": "id"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        576,
+        -944
+      ],
+      "id": "6090d7a0-04a3-446a-90a9-8d59862407b7",
+      "name": "Monatsordner2",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ccfa6b72-6c17-4493-86a0-442961d3e3fd",
+              "name": "data",
+              "value": "={{$(\"Text Classifier\").item.binary.attachment_0}}",
+              "type": "binary"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        736,
+        -944
+      ],
+      "id": "1bc8c4bf-ed73-4300-836f-3498cc60da7b",
+      "name": "Datei setzen1"
+    },
+    {
+      "parameters": {
+        "name": "={{ $('Informationen extrahieren1').item.json.output.bezeichnung }}-{{ $('Informationen extrahieren1').item.json.output.rechnungsdatum }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "={{ $('Monatsordner2').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        912,
+        -944
+      ],
+      "id": "657766c6-2f1f-425b-b263-1729d290af55",
+      "name": "Dateiupload1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "cGjALhySclQE3yCC",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        -944
+      ],
+      "id": "933c47e6-eafb-4211-bfbc-e7d8fc321169",
+      "name": "Email als gelesen markieren",
+      "webhookId": "ac479957-2e24-4d05-9881-645acf5533d9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "dgYuTPNYEcoO8ucv",
+          "name": "ivanov"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.extractedText }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "kategorie",
+              "description": "Die Kategorie der Einnahme/Ausgabe. Wähle die passende Kategorie aus folgender Liste aus:\n\nKategorien der Einnahmen:\n- Betriebseinnahmen 19%\n- Betriebseinnahmen 7%\n- Steuerfreie Einnahmen\n- USt-Erstattung vom Finanzamt\n- Verkauf Anlagevermögen\n- Privatentnahme\n\nKategorien der Ausgaben:\n- Wareneinkauf\n- Fremdleistungen\n- Personal\n- Miete/Raumkosten\n- Telefon/Internet\n- Reisekosten\n- Fortbildung\n- Werbung\n- Bürobedarf\n- Rechts-/Steuerberatung\n- Versicherungen\n- Beiträge/Gebühren\n- Kfz-Kosten\n- Bewirtung\n- Geschenke\n- Homeoffice-Pauschale\n- Abschreibungen (AfA)\n- Bankgebühren\n- Software/Abos\n- Sonstige Ausgaben",
+              "required": true
+            },
+            {
+              "name": "geschäftspartner",
+              "description": "=Name des Unternehmens oder der Person, von dem die Rechnung stammt (bei Ausgaben) oder an den die Rechnung geht (bei Einnahmen). Extrahiere den vollständigen Firmennamen inkl. Rechtsform (z.B. \"Mustermann GmbH\").",
+              "required": true
+            },
+            {
+              "name": "ust-id",
+              "description": "Umsatzsteuer-Identifikationsnummer des Geschäftspartners. Format: Länderkürzel + Zahlen (z.B. \"DE123456789\"). Falls nicht vorhanden, leer lassen.",
+              "required": true
+            },
+            {
+              "name": "bezeichnung",
+              "description": "Kurze Beschreibung der Leistung oder Ware. Was wurde gekauft/verkauft? (z.B. \"Webdesign Homepage\", \"Büromaterial\", \"Beratung März 2024\").",
+              "required": true
+            },
+            {
+              "name": "rechnungsnummer",
+              "description": "Die Rechnungsnummer des Belegs, wie sie auf der Rechnung steht (z.B. \"RE-2024-0042\", \"INV-12345\").",
+              "required": true
+            },
+            {
+              "name": "rechnungsdatum",
+              "description": "Das Datum, das auf der Rechnung als Rechnungsdatum angegeben ist. Format: TT.MM.JJJJ (z.B. \"15.03.2024\").",
+              "required": true
+            },
+            {
+              "name": "nettobetrag",
+              "description": "Rechnungsbetrag ohne Umsatzsteuer. Nur die Zahl, ohne €-Zeichen (z.B. \"510,50\"). Bei mehreren Positionen die Netto-Summe.",
+              "required": true
+            },
+            {
+              "name": "steuersatz",
+              "description": "Der Umsatzsteuersatz. Möglichkeiten: 19%, 7%, 0%. Falls mehrere Steuersätze, nimm den Hauptsteuersatz.",
+              "required": true
+            },
+            {
+              "name": "währung",
+              "description": "Währung des Betrags. Standard: \"EUR\". Andere Optionen: \"USD\", \"GBP\", \"CHF\".",
+              "required": true
+            },
+            {
+              "name": "monat",
+              "description": "Der ausgeschriebene Monat des Rechnungsdatums (\"Januar\", \"Februar\". etc.)",
+              "required": true
+            },
+            {
+              "name": "jahr",
+              "description": "Das Jahr des Rechnungsdatums (\"2024\", \"2025\", etc.)",
+              "required": true
+            },
+            {
+              "name": "bruttobetrag",
+              "description": "Rechnungsbetrag mit Umsatzsteuer. Nur die Zahl, ohne €-Zeichen (z.B. \"610,50\").",
+              "required": true
+            },
+            {
+              "name": "steuer",
+              "description": "Der Geldbetrag der durch die Umsatzsteuer dazukommt. Nur die Zahl, ohne €-Zeichen (z.B. \"110,50\")."
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "=Du bist ein erfahrener Extraktionsalgorithmus für Rechnungen.\nExtrahiere ausschließlich relevante Informationen aus dem Text.Wenn du den Wert eines gefragten Attributs nicht erkennst, darfst du den Attributwert weglassen. \n\nDu brauchst die Währung nicht zusätzlich nach jedem Betrag angeben, dafür gibt es die Variable \"Währung\".\n\nWICHTIG: Nutze für Beträge die deutsche Schreibweise (z.B. 1,99€ statt 1.99€ oder 1239,10 statt 1239.10)\n\nEs handelt sich bei folgender Rechnung um eine {{ $('Loop').item.json.parents[0] === '17RIa-nmTpIZ6nTJiR0D30Pqqmyb9YJ6N' ? 'Einnahme' : 'Ausgabe' }}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        -2416,
+        -1424
+      ],
+      "id": "bcb84931-da91-4dd0-a7ea-8489fa36b812",
+      "name": "Informationen extrahieren"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.extractedText }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "kategorie",
+              "description": "Die Kategorie der Einnahme/Ausgabe. Wähle die passende Kategorie aus folgender Liste aus:\n\nKategorien der Einnahmen:\n- Betriebseinnahmen 19%\n- Betriebseinnahmen 7%\n- Steuerfreie Einnahmen\n- USt-Erstattung vom Finanzamt\n- Verkauf Anlagevermögen\n- Privatentnahme\n\nKategorien der Ausgaben:\n- Wareneinkauf\n- Fremdleistungen\n- Personal\n- Miete/Raumkosten\n- Telefon/Internet\n- Reisekosten\n- Fortbildung\n- Werbung\n- Bürobedarf\n- Rechts-/Steuerberatung\n- Versicherungen\n- Beiträge/Gebühren\n- Kfz-Kosten\n- Bewirtung\n- Geschenke\n- Homeoffice-Pauschale\n- Abschreibungen (AfA)\n- Bankgebühren\n- Software/Abos\n- Sonstige Ausgaben",
+              "required": true
+            },
+            {
+              "name": "geschäftspartner",
+              "description": "=Name des Unternehmens oder der Person, von dem die Rechnung stammt (bei Ausgaben) oder an den die Rechnung geht (bei Einnahmen). Extrahiere den vollständigen Firmennamen inkl. Rechtsform (z.B. \"Mustermann GmbH\").",
+              "required": true
+            },
+            {
+              "name": "ust-id",
+              "description": "Umsatzsteuer-Identifikationsnummer des Geschäftspartners. Format: Länderkürzel + Zahlen (z.B. \"DE123456789\"). Falls nicht vorhanden, leer lassen.",
+              "required": true
+            },
+            {
+              "name": "bezeichnung",
+              "description": "Kurze Beschreibung der Leistung oder Ware. Was wurde gekauft/verkauft? (z.B. \"Webdesign Homepage\", \"Büromaterial\", \"Beratung März 2024\").",
+              "required": true
+            },
+            {
+              "name": "rechnungsnummer",
+              "description": "Die Rechnungsnummer des Belegs, wie sie auf der Rechnung steht (z.B. \"RE-2024-0042\", \"INV-12345\").",
+              "required": true
+            },
+            {
+              "name": "rechnungsdatum",
+              "description": "Das Datum, das auf der Rechnung als Rechnungsdatum angegeben ist. Format: TT.MM.JJJJ (z.B. \"15.03.2024\").",
+              "required": true
+            },
+            {
+              "name": "nettobetrag",
+              "description": "Rechnungsbetrag ohne Umsatzsteuer. Nur die Zahl, ohne €-Zeichen (z.B. \"510,50\"). Bei mehreren Positionen die Netto-Summe.",
+              "required": true
+            },
+            {
+              "name": "steuersatz",
+              "description": "Der Umsatzsteuersatz. Möglichkeiten: 19%, 7%, 0%. Falls mehrere Steuersätze, nimm den Hauptsteuersatz.",
+              "required": true
+            },
+            {
+              "name": "währung",
+              "description": "Währung des Betrags. Standard: \"EUR\". Andere Optionen: \"USD\", \"GBP\", \"CHF\".",
+              "required": true
+            },
+            {
+              "name": "monat",
+              "description": "Der ausgeschriebene Monat des Rechnungsdatums (\"Januar\", \"Februar\". etc.)",
+              "required": true
+            },
+            {
+              "name": "jahr",
+              "description": "Das Jahr des Rechnungsdatums (\"2024\", \"2025\", etc.)",
+              "required": true
+            },
+            {
+              "name": "bruttobetrag",
+              "description": "Rechnungsbetrag mit Umsatzsteuer. Nur die Zahl, ohne €-Zeichen (z.B. \"610,50\").",
+              "required": true
+            },
+            {
+              "name": "steuer",
+              "description": "Der Geldbetrag der durch die Umsatzsteuer dazukommt. Nur die Zahl, ohne €-Zeichen (z.B. \"110,50\")."
+            }
+          ]
+        },
+        "options": {
+          "systemPromptTemplate": "=Du bist ein erfahrener Extraktionsalgorithmus für Rechnungen.\nExtrahiere ausschließlich relevante Informationen aus dem Text.Wenn du den Wert eines gefragten Attributs nicht erkennst, darfst du den Attributwert weglassen. \n\nDu brauchst die Währung nicht zusätzlich nach jedem Betrag angeben, dafür gibt es die Variable \"Währung\".\n\nWICHTIG: Nutze für Beträge die deutsche Schreibweise (z.B. 1,99€ statt 1.99€ oder 1239,10 statt 1239.10)\n\nEs handelt sich bei folgender Rechnung um eine {{ $('Einnahme oder Ausgabe').item.json.data.approved ? 'Einnahme' : 'Ausgabe' }}.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1,
+      "position": [
+        128,
+        -1488
+      ],
+      "id": "6c529ae9-c71a-4134-a5e8-5aa013a6c6f5",
+      "name": "Informationen extrahieren2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af8999f-0611-4e73-a7b1-fc4943a05d24",
+              "name": "content.parts[0].text",
+              "value": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -192,
+        -1904
+      ],
+      "id": "8f69b30a-b271-44bb-bad1-42da578197e0",
+      "name": "Text standardisieren"
+    },
+    {
+      "parameters": {
+        "content": "### Nicht vergessen deine Ordner-ID (Einnahmen-Ordner) im Systemprompt anzugeben!",
+        "height": 112,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2336,
+        -1232
+      ],
+      "typeVersion": 1,
+      "id": "1bf6b5cb-d635-4a73-a547-e3ca2f1deb8a",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "content": "## Hier auch :)",
+        "height": 80,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1168,
+        -1408
+      ],
+      "typeVersion": 1,
+      "id": "b6eea691-c503-4958-ad74-2da348bb0406",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q",
+          "mode": "list",
+          "cachedResultName": "EÜR 2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1787233319,
+          "mode": "list",
+          "cachedResultName": "Belege",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/12JNdkry2kgTeZVlC3Db6mUilzUbbIckU2eXYyJCvI1Q/edit#gid=1787233319"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Art": "={{ $('Loop').item.json.parents[0] === '17RIa-nmTpIZ6nTJiR0D30Pqqmyb9YJ6N' ? 'Einnahme' : 'Ausgabe' }}",
+            "Kategorie": "={{ $('Informationen extrahieren').item.json.output.kategorie }}",
+            "Geschäftspartner": "={{ $('Informationen extrahieren').item.json.output['geschäftspartner'] }}",
+            "USt-IdNr": "={{ $('Informationen extrahieren').item.json.output['ust-id'] }}",
+            "Bezeichnung": "={{ $('Informationen extrahieren').item.json.output.bezeichnung }}",
+            "Rechnungsnummer": "={{ $('Informationen extrahieren').item.json.output.rechnungsnummer }}",
+            "Rechnungsdatum": "={{ $('Informationen extrahieren').item.json.output.rechnungsdatum }}",
+            "Netto": "={{ $('Informationen extrahieren').item.json.output.nettobetrag }}",
+            "Steuersatz": "={{ $('Informationen extrahieren').item.json.output.steuersatz }}",
+            "Währung": "={{ $('Informationen extrahieren').item.json.output['währung'] }}",
+            "Beleg-Link": "={{ $('Datei herunterladen').item.json.webViewLink }}",
+            "Steuer": "={{ $('Informationen extrahieren').item.json.output.steuer }}",
+            "Brutto": "={{ $('Informationen extrahieren').item.json.output.bruttobetrag }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Art",
+              "displayName": "Art",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Kategorie",
+              "displayName": "Kategorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Geschäftspartner",
+              "displayName": "Geschäftspartner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "USt-IdNr",
+              "displayName": "USt-IdNr",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Bezeichnung",
+              "displayName": "Bezeichnung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rechnungsnummer",
+              "displayName": "Rechnungsnummer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rechnungsdatum",
+              "displayName": "Rechnungsdatum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Netto",
+              "displayName": "Netto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Steuersatz",
+              "displayName": "Steuersatz",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Steuer",
+              "displayName": "Steuer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Brutto",
+              "displayName": "Brutto",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Währung",
+              "displayName": "Währung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beleg-Link",
+              "displayName": "Beleg-Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Zahlungsdatum",
+              "displayName": "Zahlungsdatum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Zahlungsstatus",
+              "displayName": "Zahlungsstatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Zahlungsweg",
+              "displayName": "Zahlungsweg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Notizen",
+              "displayName": "Notizen",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1344,
+        -1424
+      ],
+      "id": "d505385d-66be-4ab3-bf23-b21f27e56119",
+      "name": "Beleginfos eintragen",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LZ3LlQvYNg4X6eWJ",
+          "name": "ivanov"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Informationen extrahieren",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jahresordner schon vorhanden?": {
+      "main": [
+        [
+          {
+            "node": "Ordner noch nicht vorhanden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jahresordner erstellen": {
+      "main": [
+        [
+          {
+            "node": "Monate als Liste",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monatsordner einfügen": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Datei herunterladen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Monatsordner einfügen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monate als Liste": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Jahre auswählen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jahre auswählen": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Jahresordner schon vorhanden?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ordner noch nicht vorhanden": {
+      "main": [
+        [
+          {
+            "node": "Jahresordner erstellen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Schutz vor Fremdzugriff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Nachricht senden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Sprachnachricht herunterladen",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text standardisieren",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Einnahme oder Ausgabe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild herunterladen": {
+      "main": [
+        [
+          {
+            "node": "Bild auslesen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schutz vor Fremdzugriff": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Informationen extrahieren2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alle Belege auslesen": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Erfolgsnachricht": {
+      "main": [
+        [
+          {
+            "node": "Nachricht senden",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ausgaben": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Einnahmen": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Einnahme oder Ausgabe": {
+      "main": [
+        [
+          {
+            "node": "Bild herunterladen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bild auslesen": {
+      "main": [
+        [
+          {
+            "node": "Informationen extrahieren2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eintrag in Belege": {
+      "main": [
+        [
+          {
+            "node": "Erfolgsnachricht",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Informationen extrahieren1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Text extrahieren1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Eintrag in Belege1": {
+      "main": [
+        [
+          {
+            "node": "Email als gelesen markieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Informationen extrahieren1": {
+      "main": [
+        [
+          {
+            "node": "Jahresordner2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jahresordner": {
+      "main": [
+        [
+          {
+            "node": "Monatsordner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monatsordner": {
+      "main": [
+        [
+          {
+            "node": "Datei verschieben",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datei verschieben": {
+      "main": [
+        [
+          {
+            "node": "Dateiname anpassen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dateiname anpassen": {
+      "main": [
+        [
+          {
+            "node": "Beleginfos eintragen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datei herunterladen": {
+      "main": [
+        [
+          {
+            "node": "Text extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text extrahieren": {
+      "main": [
+        [
+          {
+            "node": "Informationen extrahieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sprachnachricht herunterladen": {
+      "main": [
+        [
+          {
+            "node": "Sprachnachricht transkribieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sprachnachricht transkribieren": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jahresordner1": {
+      "main": [
+        [
+          {
+            "node": "Monatsordner1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monatsordner1": {
+      "main": [
+        [
+          {
+            "node": "Datei setzen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datei setzen": {
+      "main": [
+        [
+          {
+            "node": "Dateiupload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dateiupload": {
+      "main": [
+        [
+          {
+            "node": "Eintrag in Belege",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text extrahieren1": {
+      "main": [
+        [
+          {
+            "node": "Informationen extrahieren1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jahresordner2": {
+      "main": [
+        [
+          {
+            "node": "Monatsordner2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monatsordner2": {
+      "main": [
+        [
+          {
+            "node": "Datei setzen1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Datei setzen1": {
+      "main": [
+        [
+          {
+            "node": "Dateiupload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dateiupload1": {
+      "main": [
+        [
+          {
+            "node": "Eintrag in Belege1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Informationen extrahieren": {
+      "main": [
+        [
+          {
+            "node": "Jahresordner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Informationen extrahieren2": {
+      "main": [
+        [
+          {
+            "node": "Jahresordner1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text standardisieren": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Beleginfos eintragen": {
+      "main": [
+        [
+          {
+            "node": "Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a8457985-5bad-4fd1-bd11-d63a19277e55",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "05da4424857d12101f50fff429f8deac0b96048b0ed4cdf3b1b3691af23f7345"
+  },
+  "id": "BntHYX0vjKwyfGcT",
+  "tags": []
+}
